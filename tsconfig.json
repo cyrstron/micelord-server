@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "target": "es2017",
+      "noImplicitAny": true,
+      "moduleResolution": "node",      
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "sourceMap": true,
+      "outDir": ".dist",
+      "baseUrl": ".",
+      "paths": {
+          "*": [
+              "node_modules/*",
+              "/"
+          ]
+      },
+      "typeRoots" : ["./server.d.ts"],
+      "types": [
+        "@types/node",
+        "@types/express",
+        "@types/dotenv"
+      ]
+  },
+  "include": [
+    "./**/*"
+  ]
+}
