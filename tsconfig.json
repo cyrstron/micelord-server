@@ -17,12 +17,7 @@
               "/"
           ]
       },
-      "typeRoots" : ["./server.d.ts"],
-      "types": [
-        "@types/node",
-        "@types/express",
-        "@types/dotenv"
-      ]
+      "typeRoots" : ["./server.d.ts"]
   },
   "include": [
     "./**/*"
