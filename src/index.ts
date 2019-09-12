@@ -1,10 +1,11 @@
 import * as dotenv from 'dotenv';
 import express from 'express';
-import {MongoClient} from 'mongodb';
 
 import {Controllers, createControllers} from './controllers';
 import {createRouters, Routers} from './routers';
 import {Server} from './server';
+import { Models, createModels } from './models';
+import { prepareApis } from './loaders';
 
 dotenv.config();
 
@@ -12,45 +13,23 @@ const PORT = +process.env.PORT || 3001;
 
 const app: express.Application = express();
 
-const controllers: Controllers = createControllers();
-const router: Routers = createRouters(controllers);
-const server: Server = new Server(app, router);
 
-const client = new MongoClient(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true 
-});
+async function createApp() {
+  const {mongo} = await prepareApis();
 
-let collection: any;
 
-client.connect()
+  const models: Models = createModels(mongo);
+  const controllers: Controllers = createControllers(models);
+  const router: Routers = createRouters(controllers);
+  const server: Server = new Server(app, router);
+  
+  await server.listen(PORT);
+}
+
+createApp()
   .then(() => {
-    const db = client.db('micelord');
-
-    collection = db.collection('documents');
-
-    return collection.drop();
-  })
-  .then(() => {
-    return collection.insertMany([
-      {a : 1}, {a : 2}, {a : 3}
-    ]);
-  })
-  .then((result) => {    
-    console.log(result)
-    console.log("Inserted 3 documents into the collection");
+    console.info(`Server running on port ${PORT}...`)
   })
   .catch((err) => {
-    console.error(err);
+    console.error(err)
   })
-  .then(() => {
-    client.close();
-  });
-
-server.listen(PORT)
-  .then((): void => {
-    console.info(`Server is listening on ${PORT} port`);
-  })
-  .catch((err: Error): void => {
-    console.error(err);
-  });
