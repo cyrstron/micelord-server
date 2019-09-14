@@ -12,11 +12,11 @@ export class Server {
   constructor(
     private app: Application,
     config: ServerConfig,
-    routers: Routers,
-    {
+    routers: Routers, {
       verifyToken,
       parseJson,
-    }: Middlewares,
+      handleError
+    }: Middlewares
   ) {
     this.port = config.port;
 
@@ -29,6 +29,8 @@ export class Server {
     app.use('/', auth);
 
     app.use(verifyToken);
+
+    app.use(handleError);
   }
 
   public listen() {

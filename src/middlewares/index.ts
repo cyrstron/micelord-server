@@ -1,10 +1,13 @@
 import bodyParser from 'body-parser';
+import { RequestHandler, ErrorRequestHandler } from "express";
+
 import { Controllers } from "../controllers";
-import { RequestHandler } from "express";
+import { handleError } from './error-handler-middleware';
 
 export interface Middlewares {
   verifyToken: RequestHandler;
   parseJson: RequestHandler;
+  handleError: ErrorRequestHandler;
 }
 
 export function createMiddlewares({
@@ -13,5 +16,6 @@ export function createMiddlewares({
   return {
     parseJson: bodyParser.json(),
     verifyToken: auth.verifyToken,
+    handleError
   };
 }
