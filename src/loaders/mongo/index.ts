@@ -1,9 +1,11 @@
-import {MongoClient, Db} from 'mongodb';
-import {mongoConfig} from '../../configs';
+import {MongoClient, Db, MongoClientOptions} from 'mongodb';
 
-export async function prepareMongo(): Promise<Db> {
-  const {url, dbName, launchOptions} = mongoConfig;
-  const client = new MongoClient(url, launchOptions);
+export async function prepareMongo(
+  url: string, 
+  dbName: string, 
+  options: MongoClientOptions
+): Promise<Db> {
+  const client = new MongoClient(url, options);
 
   await client.connect();
 

@@ -1,18 +1,14 @@
-import {ApiController} from './api';
-import {HomeController} from './home';
-import { Models } from '../models';
+import { Services } from '../services';
+import { AuthController } from './auth-controller';
 
 export interface Controllers {
-  api: ApiController;
-  home: HomeController;
+  auth: AuthController;
 }
 
-export const createControllers = (_models: Models): Controllers => ({
-  api: new ApiController(),
-  home: new HomeController(),
+export const createControllers = ({auth}: Services): Controllers => ({
+  auth: new AuthController(auth),
 });
 
 export {
-  ApiController,
-  HomeController,
+  AuthController,
 };

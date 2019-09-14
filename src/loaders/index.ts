@@ -1,18 +1,28 @@
 import { prepareMongo } from "./mongo";
-import { Db } from "mongodb";
+import { Db, MongoClientOptions } from "mongodb";
 
 export interface PreparedApis {
-  mongo: Db
-}
+  db: Db
+};
 
-export async function prepareApis(): Promise<PreparedApis> {
+export interface LoadersConfig {
+  mongo: {
+    url: string;
+    dbName: string;
+    options: MongoClientOptions;
+  }
+};
+
+export async function prepareApis({
+  mongo
+}: LoadersConfig): Promise<PreparedApis> {
   const prepares = [
-    prepareMongo()
+    prepareMongo(mongo.url, mongo.dbName, mongo.options),
   ];
 
-  const [mongo] = await Promise.all(prepares);
+  const [db] = await Promise.all(prepares);
 
   return {
-    mongo
+    db
   };
 }

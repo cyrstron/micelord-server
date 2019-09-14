@@ -1,16 +1,13 @@
 import {Router} from 'express';
 import {Controllers} from '../controllers';
-import {createApiRouter} from './api';
-import {createHomeRouter} from './home';
+import { createAuthRouter } from './auth';
 
 export interface Routers {
-  home: Router;
-  api: Router;
+  auth: Router;
 }
 
 export const createRouters = (
   controllers: Controllers,
 ): Routers => ({
-  api: createApiRouter(Router(), controllers.api),
-  home: createHomeRouter(Router(), controllers.home),
+  auth: createAuthRouter(Router(), controllers.auth),
 });

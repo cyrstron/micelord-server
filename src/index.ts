@@ -1,35 +1,42 @@
 import * as dotenv from 'dotenv';
-import express from 'express';
-
-import {Controllers, createControllers} from './controllers';
-import {createRouters, Routers} from './routers';
-import {Server} from './server';
-import { Models, createModels } from './models';
-import { prepareApis } from './loaders';
 
 dotenv.config();
 
-const PORT = +process.env.PORT || 3001;
+import * as config from './configs'; 
 
-const app: express.Application = express();
+import express, {Application} from 'express';
+
+import { prepareApis, PreparedApis } from './loaders';
+import {createUtils, Utils} from './utils';
+import { createModels, Models } from './models';
+import { createServices, Services } from './services';
+import {createControllers, Controllers} from './controllers';
+import { createMiddlewares, Middlewares } from './middlewares';
+import {createRouters, Routers} from './routers';
+
+import {Server} from './server';
 
 
 async function createApp() {
-  const {mongo} = await prepareApis();
+  const utils: Utils = await createUtils(config.utilsConfig);
 
+  const apis: PreparedApis = await prepareApis(config.loadersConfig);
+  const models: Models = createModels(apis.db);
+  const services: Services = createServices(utils, models);
+  const controllers: Controllers = createControllers(services);
+  const middlewares: Middlewares = createMiddlewares(controllers);
+  const routers: Routers = createRouters(controllers);
 
-  const models: Models = createModels(mongo);
-  const controllers: Controllers = createControllers(models);
-  const router: Routers = createRouters(controllers);
-  const server: Server = new Server(app, router);
+  const app: Application = express();
+  const server: Server = new Server(app, config.serverConfig, routers, middlewares);
   
-  await server.listen(PORT);
+  await server.listen();
 }
 
 createApp()
   .then(() => {
-    console.info(`Server running on port ${PORT}...`)
+    console.info(`Server running on port ${config.serverConfig.port}...`);
   })
   .catch((err) => {
-    console.error(err)
+    console.error(err);
   })
