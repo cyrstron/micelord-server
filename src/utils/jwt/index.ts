@@ -9,6 +9,7 @@ export type JwtOptions = Omit<JwtSettings, 'privateKey' | 'publicKey'> & {
 export async function createJwtUtils(fs: FsUtils, {
   privateKeyPath,
   publicKeyPath,
+  ...settings
 }: JwtOptions): Promise<JwtUtils> {
   const [privateKey, publicKey] = await Promise.all([
     fs.readFileAsUtf8(privateKeyPath),
@@ -18,6 +19,7 @@ export async function createJwtUtils(fs: FsUtils, {
   return new JwtUtils({
     privateKey,
     publicKey,
+    ...settings
   });
 }
 
