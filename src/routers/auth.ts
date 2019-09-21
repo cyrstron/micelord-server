@@ -2,9 +2,11 @@ import {Router} from 'express';
 import {AuthController} from '../controllers';
 
 export const createAuthRouter = (
-  router: Router,
+  Router: () => Router,
   controller: AuthController,
 ): Router => {
+  const router = Router();
+  
   router.post('/signup', controller.signUp);
   router.post('/signin', controller.signIn);
 

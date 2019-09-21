@@ -21,14 +21,17 @@ export class Server {
     this.port = config.port;
 
     const {
-      auth
+      auth,
+      api,
     } = routers;
 
     app.use(parseJson);
 
-    app.use('/', auth);
+    app.use('/auth', auth);
 
     app.use(verifyToken);
+    
+    app.use('/api', api);
 
     app.use(handleError);
   }

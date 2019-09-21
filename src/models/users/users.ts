@@ -1,9 +1,13 @@
-import { Db, Collection } from "mongodb";
+import { Db, Collection, ObjectID} from "mongodb";
 import { HashedPassword } from "../../utils";
 
 export interface UserSchema extends HashedPassword {
   name: string;
   email: string;
+}
+
+export interface UserJsonPayload extends UserSchema {
+  _id: string;
 }
 
 export class UsersModel {
@@ -16,37 +20,19 @@ export class UsersModel {
     this.collection.createIndex({ name: 1 }, { unique: true });
   }
 
-  add(user: UserSchema) {
+  add(user: Omit<UserSchema, '_id'>) {
     return this.collection.insertOne(user);
   }
   
-  findById(id: string) {
-    return this.collection.findOne({id});
+  findById(id: string): Promise<UserJsonPayload> {
+    return this.collection.findOne({_id: new ObjectID(id)});
   }
 
-  findByName(name: string) {
+  findByName(name: string): Promise<UserJsonPayload> {
     return this.collection.findOne({name});
   }
 
-  findByEmail(email: string) {
+  findByEmail(email: string): Promise<UserJsonPayload> {
     return this.collection.findOne({email});
-  }
-
-  async findHashedPasswordByEmail(email: string): Promise<HashedPassword | null> {
-    const user = await this.findByEmail(email);
-
-    if (!user) return null;
-
-    const {
-      hash, 
-      salt, 
-      iterations
-    } = user;
-
-    return {
-      hash, 
-      salt, 
-      iterations
-    };
   }
 }

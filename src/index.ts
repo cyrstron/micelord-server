@@ -4,7 +4,7 @@ dotenv.config();
 
 import * as config from './configs'; 
 
-import express, {Application} from 'express';
+import express, {Application, Router} from 'express';
 
 import { prepareApis, PreparedApis } from './loaders';
 import {createUtils, Utils} from './utils';
@@ -25,7 +25,7 @@ async function createApp() {
   const services: Services = createServices(utils, models);
   const controllers: Controllers = createControllers(services);
   const middlewares: Middlewares = createMiddlewares(controllers);
-  const routers: Routers = createRouters(controllers);
+  const routers: Routers = createRouters(Router, controllers);
 
   const app: Application = express();
   const server: Server = new Server(app, config.serverConfig, routers, middlewares);

@@ -1,5 +1,6 @@
 import { UsersModel } from "../models";
-import { EncryptUtils, JwtUtils } from "../utils";
+import { EncryptUtils, JwtUtils, HashedPassword } from "../utils";
+import { UserSchema } from "../models/users";
 
 export interface NewUser {
   name: string;
@@ -7,10 +8,9 @@ export interface NewUser {
   email: string;
 }
 
-export interface UserPayload {
-  name: string;
-  email: string;
-}
+export type UserPayload = Omit<UserSchema, keyof HashedPassword | '_id'> & {
+  _id: string;
+};
 
 export class AuthService {
   constructor(

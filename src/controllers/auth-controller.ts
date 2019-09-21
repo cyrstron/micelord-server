@@ -11,12 +11,12 @@ export class AuthController {
   ) {}
 
   signUp: RequestHandler = async (req, res, next) => {
-    const payload = req.params as NewUser;
+    const payload = req.body as NewUser;
 
     try {
       await this.auth.signUp(payload);
 
-      res.status(201);
+      res.sendStatus(201);
     } catch (err) {
       next(err);
     }
@@ -37,7 +37,7 @@ export class AuthController {
     }
   }
 
-  verifyToken: RequestHandler = async (req: RequestWithUser, _res, next) => {
+  verifyToken: RequestHandler = async (req: RequestWithUser, res, next) => {
     const token = req.headers['authorization'];
 
     try {
@@ -47,7 +47,7 @@ export class AuthController {
 
       next();
     } catch (err) {
-      next(err);
+      res.sendStatus(401);
     }
   }
 }

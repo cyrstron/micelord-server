@@ -1,11 +1,15 @@
 import {Router} from 'express';
-import {ApiController} from '../../controllers';
+import { Controllers } from '../../controllers';
+import { createUsersRouter } from './users';
 
 export const createApiRouter = (
-  router: Router,
-  controller: ApiController,
+  Router: () => Router,
+  {users}: Controllers,
 ): Router => {
-  router.get('/hello', controller.handleRequest);
+  const router = Router();
+  const usersRouter = createUsersRouter(Router, users);
+
+  router.use('/users', usersRouter);
 
   return router;
 };
