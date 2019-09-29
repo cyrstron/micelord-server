@@ -37,6 +37,34 @@ export class AuthController {
     }
   }
 
+  validateEmail: RequestHandler = async (req, res, next) => {
+    const {email} = req.body as {
+      email: string;
+    };
+
+    try {
+      await this.auth.validateEmail(email);
+
+      res.sendStatus(200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  validateName: RequestHandler = async (req, res, next) => {
+    const {name} = req.body as {
+      name: string;
+    };
+
+    try {
+      await this.auth.validateName(name);
+
+      res.sendStatus(200);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   verifyToken: RequestHandler = async (req: RequestWithUser, res, next) => {
     const token = req.headers['authorization'];
 

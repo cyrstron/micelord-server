@@ -1,4 +1,4 @@
-import crypto, { pbkdf2 } from 'crypto';
+import crypto from 'crypto';
 
 export interface EncryptOptions {
   saltLength: number;
@@ -46,7 +46,7 @@ export class EncryptUtils {
     iterations: number = this.iterations,
   ): Promise<string> {
     return new Promise((res, rej) => {
-      pbkdf2(
+      crypto.pbkdf2(
         password, 
         salt, 
         iterations,

@@ -20,6 +20,8 @@ export class AuthService {
   ) {}
 
   async signUp({password, ...user}: NewUser): Promise<void> {
+    await this.users.validateUser(user);
+
     const {hash, salt, iterations} = await this.encrypt.excryptPassword(password);
 
     await this.users.add({
@@ -58,6 +60,14 @@ export class AuthService {
 
     return token;
   }
+
+  validateEmail(email: string): Promise<void> {
+    return this.users.validateEmail(email);
+  } 
+
+  validateName(name: string): Promise<void> {
+    return this.users.validateName(name);
+  } 
 
   async decodeToken(token: string): Promise<UserPayload> {
     const payload = await this.jwt.verify<UserPayload>(token);

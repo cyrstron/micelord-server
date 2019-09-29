@@ -7,6 +7,9 @@ export const createAuthRouter = (
 ): Router => {
   const router = Router();
   
+  router.post('/validate-name', controller.validateName);
+  router.post('/validate-email', controller.validateEmail);
+  
   router.post('/signup', controller.signUp);
   router.post('/signin', controller.signIn);
 
