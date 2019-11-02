@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "nodemon",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "debug": "node --inspect -r ts-node/register src/index.ts"
   },
   "author": "",
   "license": "ISC",

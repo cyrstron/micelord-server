@@ -22,20 +22,33 @@ export class UsersModel {
     this.collection.createIndex({ name: 1 }, { unique: true });
   }
 
-  add(user: Omit<UserSchema, '_id'>) {
+  add(user: UserSchema) {
     return this.collection.insertOne(user);
   }
+
+  async findOne(filter: {[key: string]: any}): Promise<UserJsonPayload | null> {
+    const result = await this.collection.findOne(filter) as null | (UserSchema & {_id: ObjectID});
+
+    if (result === null) return null;
+
+    const {_id, ...user} = result;
+
+    return {
+      _id: _id.toHexString(),
+      ...user
+    }
+  }
   
-  findById(id: string): Promise<UserJsonPayload> {
-    return this.collection.findOne({_id: new ObjectID(id)});
+  findById(id: string): Promise<UserJsonPayload | null> {
+    return this.findOne({_id: new ObjectID(id)});
   }
 
-  findByName(name: string): Promise<UserJsonPayload> {
-    return this.collection.findOne({name});
+  findByName(name: string): Promise<UserJsonPayload | null> {
+    return this.findOne({name});
   }
 
-  findByEmail(email: string): Promise<UserJsonPayload | undefined> {
-    return this.collection.findOne({email});
+  findByEmail(email: string): Promise<UserJsonPayload | null> {
+    return this.findOne({email});
   }
 
   async validateEmail(email: string): Promise<never | void> {
