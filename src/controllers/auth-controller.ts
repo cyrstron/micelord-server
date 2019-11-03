@@ -65,6 +65,24 @@ export class AuthController {
     }
   }
 
+  validateToken: RequestHandler = async (req: RequestWithUser, res) => {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+      res.sendStatus(401);
+
+      return;
+    }
+
+    try {
+      await this.auth.decodeToken(token);
+      
+      res.sendStatus(200);
+    } catch (err) {
+      res.sendStatus(401);
+    }
+  }
+
   verifyToken: RequestHandler = async (req: RequestWithUser, res, next) => {
     const token = req.headers['authorization'];
 

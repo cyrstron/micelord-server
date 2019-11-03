@@ -9,6 +9,7 @@ export const createAuthRouter = (
   
   router.post('/validate-name', controller.validateName);
   router.post('/validate-email', controller.validateEmail);
+  router.get('/validate-token', controller.validateToken);
   
   router.post('/signup', controller.signUp);
   router.post('/signin', controller.signIn);
