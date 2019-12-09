@@ -5,5 +5,5 @@ export const handleError: ErrorRequestHandler = (err, _req, res, _next) => {
   
   res.status(err.status || 500);
 
-  res.send(err);
+  res.send(err.message || 'Interval server error');
 }
