@@ -1,7 +1,8 @@
-import { AuthService, NewUser, UserPayload } from "./auth-service";
+import { AuthService, NewUser, UserPayload } from "./auth-service/auth-service";
 import { Models } from "../models";
 import { Utils } from "../utils";
 import { UsersService } from "./users-service";
+import { createAuthService } from "./auth-service";
 
 export interface Services {
   auth: AuthService;
@@ -10,7 +11,7 @@ export interface Services {
 
 export function createServices(utils: Utils, models: Models): Services {
   return {
-    auth: new AuthService(utils.encrypt, utils.jwt, models.users),
+    auth: createAuthService(models.users, utils),
     users: new UsersService(models.users),
   }
 }

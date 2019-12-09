@@ -1,21 +1,31 @@
 import { Db, Collection, ObjectID} from "mongodb";
-import { HashedPassword } from "../../utils";
+import { HashedPassword, GoogleAuthUtils, Utils } from "../../utils";
 import { emailRegex } from "./constants";
 import { NewUser } from "../../services";
 
-export interface UserSchema extends HashedPassword {
+interface DefaultUserSchema extends HashedPassword {
   name: string;
   email: string;
 }
 
-export interface UserJsonPayload extends UserSchema {
+interface GoogleUserSchema {
+  google: true;
+  name: string;
+  email: string;
+}
+
+export type UserSchema = DefaultUserSchema | GoogleUserSchema;
+
+export type UserJsonPayload = UserSchema & {
   _id: string;
 }
 
 export class UsersModel {
   collection: Collection<UserSchema>;
+  googleAuth: GoogleAuthUtils;
 
-  constructor(db: Db) {
+  constructor(db: Db, {googleAuth}: Utils) {
+    this.googleAuth = googleAuth;
     this.collection = db.collection<UserSchema>('users');
 
     this.collection.createIndex({ email: 1 }, { sparse: true, unique: true });
@@ -37,6 +47,12 @@ export class UsersModel {
       _id: _id.toHexString(),
       ...user
     }
+  }
+
+  async findByGoogleToken(googleToken: string) {
+    const {email} = await this.googleAuth.decodeToken(googleToken);
+
+    return this.findByEmail(email);
   }
   
   findById(id: string): Promise<UserJsonPayload | null> {
@@ -79,10 +95,21 @@ export class UsersModel {
     }
   }
 
-  validateUser({email, name}: Omit<NewUser, 'password'>): Promise<never | void[]> {
-    return Promise.all([
-      this.validateEmail(email),
+  validateUser(
+    user: Omit<NewUser, 'password'>
+  ): Promise<never | void[]> {
+    const {name, ...userData} = user;
+
+    const validationPromises: Promise<void>[] = [
       this.validateName(name),
-    ]);
+    ];
+
+    if ('email' in userData) {
+      const {email} = userData;
+
+      validationPromises.push(this.validateEmail(email));
+    }
+
+    return Promise.all(validationPromises);
   }
 }

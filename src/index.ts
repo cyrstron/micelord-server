@@ -21,11 +21,11 @@ async function createApp() {
   const utils: Utils = await createUtils(config.utilsConfig);
 
   const apis: PreparedApis = await prepareApis(config.loadersConfig);
-  const models: Models = createModels(apis.db);
+  const models: Models = createModels(apis.db, utils);
   const services: Services = createServices(utils, models);
   const controllers: Controllers = createControllers(services);
   const middlewares: Middlewares = createMiddlewares(controllers);
-  const routers: Routers = createRouters(Router, controllers);
+  const routers: Routers = createRouters(Router, controllers, middlewares);
 
   const app: Application = express();
   const server: Server = new Server(app, config.serverConfig, routers, middlewares);

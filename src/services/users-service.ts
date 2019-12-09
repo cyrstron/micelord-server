@@ -1,10 +1,14 @@
 import { UsersModel } from "../models";
-import { UserPayload } from "./auth-service";
+import { UserPayload } from "./auth-service/auth-service";
 
 export class UsersService {
   constructor(
-    private users: UsersModel,
+    private users: UsersModel
   ) {}
+
+  async getUserByGoogleToken(googleToken: string) {
+    return this.users.findByGoogleToken(googleToken);
+  }
 
   async getUserById(id: string): Promise<UserPayload | undefined> {
     const user = await this.users.findById(id);
@@ -12,12 +16,15 @@ export class UsersService {
     if (!user) return;
 
     const {
-      hash,
-      salt,
-      iterations,
-      ...userPayload
+      _id,
+      email,
+      name
     } = user;
 
-    return userPayload;
+    return {
+      _id,
+      email,
+      name,      
+    };
   }
 }

@@ -23,13 +23,15 @@ export class AuthController {
   }
 
   signIn: RequestHandler = async (req, res, next) => {
-    const {email, password} = req.body as {
+    const signInPayload = req.body as {
       email: string;
       password: string;
+    } | {
+      googleToken: string;
     };
 
     try {
-      const token = await this.auth.signIn(email, password);
+      const token = await this.auth.signIn(signInPayload);
 
       res.send(token);
     } catch (err) {

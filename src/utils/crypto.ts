@@ -63,8 +63,9 @@ export class EncryptUtils {
     })
   }
 
-  async excryptPassword(password: string): Promise<HashedPassword> {
+  async encryptPassword(password: string): Promise<HashedPassword> {
     const salt = this.generateSalt();
+    
     const hash = await this.generateHash(password, salt);
 
     return {

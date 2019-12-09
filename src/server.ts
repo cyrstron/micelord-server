@@ -13,7 +13,6 @@ export class Server {
     private app: Application,
     config: ServerConfig,
     routers: Routers, {
-      verifyToken,
       parseJson,
       handleError
     }: Middlewares
@@ -28,8 +27,6 @@ export class Server {
     app.use(parseJson);
 
     app.use('/auth', auth);
-
-    app.use(verifyToken);
     
     app.use('/api', api);
 
