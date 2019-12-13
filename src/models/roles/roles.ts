@@ -1,28 +1,23 @@
 import { Db, Collection} from "mongodb";
 import { HashedPassword } from "../../utils";
 
-interface DefaultUserSchema extends HashedPassword {
+export interface RoleSchema extends HashedPassword {
   name: string;
-  email: string;
+  permissons: Array<{
+    action: string;
+    access: string;
+  }>
 }
 
-interface GoogleUserSchema {
-  google: true;
-  name: string;
-  email: string;
-}
-
-export type UserSchema = DefaultUserSchema | GoogleUserSchema;
-
-export type UserJsonPayload = UserSchema & {
+export type RoleJsonPayload = RoleSchema & {
   _id: string;
 }
 
 export class RolesModel {
-  collection: Collection<UserSchema>;
+  collection: Collection<RoleSchema>;
 
   constructor(db: Db) {
-    this.collection = db.collection<UserSchema>('roles');
+    this.collection = db.collection<RoleSchema>('roles');
 
     this.collection.createIndex({ name: 1 }, { unique: true });
   }
