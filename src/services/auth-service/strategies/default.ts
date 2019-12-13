@@ -1,5 +1,6 @@
 import { UsersModel } from "../../../models";
 import { EncryptUtils } from "../../../utils";
+import { DefaultSignInPayload } from "..";
 
 export class DefaultAuthStrategy {
   constructor(
@@ -7,7 +8,10 @@ export class DefaultAuthStrategy {
     private encrypt: EncryptUtils
   ) {}
 
-  async validate(email: string, password: string) {    
+  async validate({
+    email,
+    password
+  }: DefaultSignInPayload) {    
     const user = await this.users.findByEmail(email);
 
     if (!user || !('hash' in user)) {

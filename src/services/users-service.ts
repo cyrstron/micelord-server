@@ -1,5 +1,5 @@
 import { UsersModel } from "../models";
-import { UserPayload } from "./auth-service/auth-service";
+import { UserPayload } from "./auth-service";
 
 export class UsersService {
   constructor(
@@ -8,6 +8,10 @@ export class UsersService {
 
   async getUserByGoogleToken(googleToken: string) {
     return this.users.findByGoogleToken(googleToken);
+  }
+
+  async getUserByFacebookAuth(email: string, token: string) {
+    return this.users.findByFacebookToken(email, token);
   }
 
   async getUserById(id: string): Promise<UserPayload | undefined> {

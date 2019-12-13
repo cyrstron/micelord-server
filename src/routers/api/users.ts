@@ -9,7 +9,8 @@ export const createUsersRouter = (
 ): Router => {
   const router = Router();
 
-  router.get('/by-google-token', controller.getUserByGoogleToken);
+  router.get('/by-google', controller.getUserByGoogleToken);
+  router.get('/by-facebook', controller.getUserByFacebookAuth);
 
   router.use(verifyToken);
 

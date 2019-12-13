@@ -1,5 +1,11 @@
-import { AuthService, NewUser, UserPayload } from "../services";
+import { AuthService } from "../services/";
 import { RequestHandler, Request } from "express";
+import { 
+  AuthStrategyType, 
+  SignInPayload, 
+  UserPayload, 
+  NewUserPayload 
+} from "../services/auth-service";
 
 export interface RequestWithUser extends Request {
   user: UserPayload;
@@ -11,10 +17,13 @@ export class AuthController {
   ) {}
 
   signUp: RequestHandler = async (req, res, next) => {
-    const payload = req.body as NewUser;
+    const payload = req.body as NewUserPayload;
+    const {strategy = 'default'} = req.query as {
+      strategy?: AuthStrategyType
+    };
 
     try {
-      await this.auth.signUp(payload);
+      await this.auth.signUp(payload, strategy);
 
       res.sendStatus(201);
     } catch (err) {
@@ -23,15 +32,14 @@ export class AuthController {
   }
 
   signIn: RequestHandler = async (req, res, next) => {
-    const signInPayload = req.body as {
-      email: string;
-      password: string;
-    } | {
-      googleToken: string;
+    const {strategy = 'default'} = req.query as {
+      strategy?: AuthStrategyType
     };
 
+    const signInPayload = req.body as SignInPayload
+
     try {
-      const token = await this.auth.signIn(signInPayload);
+      const token = await this.auth.signIn(signInPayload, strategy);
 
       res.send(token);
     } catch (err) {

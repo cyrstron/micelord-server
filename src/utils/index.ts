@@ -3,6 +3,7 @@ import { FsUtils } from "./fs";
 import { createJwtUtils, JwtOptions, JwtUtils } from "./jwt";
 import { HttpUtils } from "./http";
 import { GoogleAuthUtils } from "./google-auth";
+import { FacebookAuthUtils, FacebookAuthConfig } from "./facebook-auth";
 
 export interface Utils {
   encrypt: EncryptUtils;
@@ -10,11 +11,13 @@ export interface Utils {
   jwt: JwtUtils;
   http: HttpUtils;
   googleAuth: GoogleAuthUtils;
+  facebookAuth: FacebookAuthUtils;
 }
 
 export interface UtilsConfig {
   encrypt: EncryptOptions;
   jwt: JwtOptions;
+  facebook: FacebookAuthConfig
 }
 
 export async function createUtils(config: UtilsConfig): Promise<Utils> {
@@ -29,6 +32,7 @@ export async function createUtils(config: UtilsConfig): Promise<Utils> {
     fs,
     http,
     googleAuth: new GoogleAuthUtils(http),
+    facebookAuth: new FacebookAuthUtils(http, config.facebook),
   }
 }
 

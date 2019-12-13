@@ -1,4 +1,4 @@
-import { AuthService, NewUser, UserPayload } from "./auth-service/auth-service";
+import { AuthService} from "./auth-service/auth-service";
 import { Models } from "../models";
 import { Utils } from "../utils";
 import { UsersService } from "./users-service";
@@ -19,6 +19,4 @@ export function createServices(utils: Utils, models: Models): Services {
 export {
   UsersService,
   AuthService,
-  NewUser,
-  UserPayload
 };

@@ -1,7 +1,8 @@
 import { Db, Collection, ObjectID} from "mongodb";
 import { HashedPassword, GoogleAuthUtils, Utils } from "../../utils";
 import { emailRegex } from "./constants";
-import { NewUser } from "../../services";
+import { FacebookAuthUtils } from "../../utils/facebook-auth";
+import { NewUserPayload } from "../../services/auth-service";
 
 interface DefaultUserSchema extends HashedPassword {
   name: string;
@@ -14,7 +15,13 @@ interface GoogleUserSchema {
   email: string;
 }
 
-export type UserSchema = DefaultUserSchema | GoogleUserSchema;
+interface FacebookUserSchema {
+  facebook: true;
+  name: string;
+  email: string;
+}
+
+export type UserSchema = DefaultUserSchema | GoogleUserSchema | FacebookUserSchema;
 
 export type UserJsonPayload = UserSchema & {
   _id: string;
@@ -23,9 +30,11 @@ export type UserJsonPayload = UserSchema & {
 export class UsersModel {
   collection: Collection<UserSchema>;
   googleAuth: GoogleAuthUtils;
+  facebookAuth: FacebookAuthUtils;
 
-  constructor(db: Db, {googleAuth}: Utils) {
+  constructor(db: Db, {googleAuth, facebookAuth}: Utils) {
     this.googleAuth = googleAuth;
+    this.facebookAuth = facebookAuth;
     this.collection = db.collection<UserSchema>('users');
 
     this.collection.createIndex({ email: 1 }, { sparse: true, unique: true });
@@ -55,6 +64,14 @@ export class UsersModel {
     return this.findByEmail(email);
   }
   
+  async findByFacebookToken(email: string, token: string) {
+    const isTokenValid = await this.facebookAuth.validateToken(token);
+
+    if (!isTokenValid) return null;
+
+    return this.findByEmail(email);
+  }
+
   findById(id: string): Promise<UserJsonPayload | null> {
     return this.findOne({_id: new ObjectID(id)});
   }
@@ -96,7 +113,7 @@ export class UsersModel {
   }
 
   validateUser(
-    user: Omit<NewUser, 'password'>
+    user: Omit<NewUserPayload, 'password'>
   ): Promise<never | void[]> {
     const {name, ...userData} = user;
 

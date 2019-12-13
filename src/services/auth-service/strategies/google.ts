@@ -1,13 +1,17 @@
 import { UsersModel } from "../../../models";
 import { GoogleAuthUtils } from "../../../utils";
+import {AuthStrategy} from './'
+import { SignInPayload, GoogleSignInPayload } from "..";
 
-export class GoogleAuthStrategy {
+export class GoogleAuthStrategy implements AuthStrategy {
   constructor(
     private users: UsersModel,
     private googleAuth: GoogleAuthUtils,
   ) {}
 
-  async validate(googleToken: string) {    
+  async validate(signInPayload: SignInPayload) {    
+    const {googleToken} = signInPayload as GoogleSignInPayload;
+    
     const user = await this.users.findByGoogleToken(googleToken);
 
     if (!user) {

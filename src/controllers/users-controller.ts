@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { RequestHandler, Request } from "express";
 import { RequestWithUser } from "./auth-controller";
 import { UsersService, } from "../services";
 import { HttpError } from "../errors/http-error";
@@ -9,7 +9,7 @@ export class UsersController {
   ) {}
 
   getUserByGoogleToken: RequestHandler = async (
-    req: RequestWithUser, 
+    req: Request, 
     res, 
     next
   ) => {
@@ -19,6 +19,25 @@ export class UsersController {
 
     try {
       const user = await this.users.getUserByGoogleToken(googleToken);
+
+      res.json(user);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  getUserByFacebookAuth: RequestHandler = async (
+    req: Request, 
+    res, 
+    next
+  ) => {
+    const {facebookToken, email} = req.query as {
+      facebookToken?: string;
+      email?: string;
+    };
+
+    try {
+      const user = await this.users.getUserByFacebookAuth(email, facebookToken);
 
       res.json(user);
     } catch (err) {

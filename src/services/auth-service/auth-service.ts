@@ -1,31 +1,8 @@
 import { UsersModel } from "../../models";
-import { EncryptUtils, JwtUtils, HashedPassword, Utils } from "../../utils";
+import { EncryptUtils, JwtUtils, Utils } from "../../utils";
 import { UserSchema } from "../../models/users";
 import { AuthStrategies } from "./strategies";
-
-interface NewDefaultUser {
-  name: string;
-  password: string;
-  email: string;
-}
-
-interface NewGoogleUser {
-  name: string;
-  googleToken: string;
-}
-
-export type NewUser = NewDefaultUser | NewGoogleUser;
-
-export type SignInPayload = {
-  password: string;
-  email: string;
-} | {
-  googleToken: string;
-}
-
-export type UserPayload = Omit<UserSchema, keyof HashedPassword | '_id'> & {
-  _id: string;
-};
+import { NewUserPayload, AuthStrategyType, SignInPayload, UserPayload } from "./";
 
 export class AuthService {
   encrypt: EncryptUtils;
@@ -43,32 +20,24 @@ export class AuthService {
     this.jwt = jwt;
   }
 
-  async signUp(user: NewUser): Promise<void> {
+  async signUp(
+    user: NewUserPayload,
+    strategyType: AuthStrategyType
+  ): Promise<void> {
     await this.users.validateUser(user);
 
     let userPayload: UserSchema;
 
-    if ('googleToken' in user) {
-      userPayload = await this.strategies.googleAuth.create(user);
-    } else {
-      userPayload = await this.strategies.default.create(user);
-    }
+    await this.strategies[strategyType].create(user);
 
     await this.users.add(userPayload);
   }
 
-  async signIn(signInPayload: SignInPayload): Promise<string> {
-    let userData: any;
-
-    if ('googleToken' in signInPayload) {
-      const {googleToken} = signInPayload;
-
-      userData = await this.strategies.googleAuth.validate(googleToken);
-    } else {      
-      const {email, password} = signInPayload;
-
-      userData = await this.strategies.default.validate(email, password);
-    }
+  async signIn(
+    signInPayload: SignInPayload, 
+    strategyType: AuthStrategyType
+  ): Promise<string> {    
+    const userData = await this.strategies[strategyType].validate(signInPayload);
 
     const token = await this.jwt.sign(userData);
 

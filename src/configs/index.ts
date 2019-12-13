@@ -8,6 +8,10 @@ export const utilsConfig = {
     hashLength: +process.env.ENCRYPT_HASH_LENGTH,
     encoding: 'base64',
   },
+  facebook: {
+    appId: process.env.FB_APP_ID,
+    appSecret: process.env.FB_APP_SECRET,
+  },
   jwt: {    
     privateKeyPath: path.resolve(__dirname, '../../private.key'),
     publicKeyPath: path.resolve(__dirname, '../../public.key'),
