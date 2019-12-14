@@ -22,13 +22,15 @@ export class UsersService {
     const {
       _id,
       email,
-      name
+      name,
+      role,
     } = user;
 
     return {
       _id,
       email,
-      name,      
+      name,
+      role     
     };
   }
 }

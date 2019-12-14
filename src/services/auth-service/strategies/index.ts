@@ -18,7 +18,7 @@ interface AuthTokenPayload {
 
 export interface AuthStrategy {
   validate: (signInPayload: SignInPayload) => Promise<AuthTokenPayload>;
-  create: (signUpPayload: NewUserPayload) => Promise<UserSchema>;
+  create: (signUpPayload: NewUserPayload) => Promise<Omit<UserSchema, 'role'>>;
 }
 
 export function createAuthStrategies(

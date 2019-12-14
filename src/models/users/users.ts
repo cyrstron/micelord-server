@@ -4,21 +4,20 @@ import { emailRegex } from "./constants";
 import { FacebookAuthUtils } from "../../utils/facebook-auth";
 import { NewUserPayload } from "../../services/auth-service";
 
-interface DefaultUserSchema extends HashedPassword {
+interface CommonUserSchema {
   name: string;
   email: string;
+  role: string;
 }
 
-interface GoogleUserSchema {
+type DefaultUserSchema = CommonUserSchema & HashedPassword;
+
+interface GoogleUserSchema extends CommonUserSchema {
   google: true;
-  name: string;
-  email: string;
 }
 
-interface FacebookUserSchema {
+interface FacebookUserSchema extends CommonUserSchema {
   facebook: true;
-  name: string;
-  email: string;
 }
 
 export type UserSchema = DefaultUserSchema | GoogleUserSchema | FacebookUserSchema;

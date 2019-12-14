@@ -39,7 +39,7 @@ export interface FacebookSignInPayload {
 
 export type SignInPayload = DefaultSignInPayload | GoogleSignInPayload | FacebookSignInPayload;
 
-export type UserPayload = Omit<UserSchema, keyof HashedPassword | '_id'> & {
+export type UserPayload = Omit<UserSchema, keyof HashedPassword | '_id' | 'google' | 'facebook'> & {
   _id: string;
 };
 

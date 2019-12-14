@@ -26,11 +26,12 @@ export class AuthService {
   ): Promise<void> {
     await this.users.validateUser(user);
 
-    let userPayload: UserSchema;
+    const userPayload = await this.strategies[strategyType].create(user);
 
-    await this.strategies[strategyType].create(user);
-
-    await this.users.add(userPayload);
+    await this.users.add({
+      ...userPayload,
+      role: 'user',
+    } as UserSchema);
   }
 
   async signIn(
