@@ -14,7 +14,8 @@ export class Server {
     config: ServerConfig,
     routers: Routers, {
       parseJson,
-      handleError
+      handleError,
+      staticServer,
     }: Middlewares
   ) {
     this.port = config.port;
@@ -25,6 +26,7 @@ export class Server {
     } = routers;
 
     app.use(parseJson);
+    app.use('/static', staticServer);
 
     app.use('/auth', auth);
     
