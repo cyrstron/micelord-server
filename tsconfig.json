@@ -17,9 +17,12 @@
               "/src"
           ]
       },
-      "typeRoots" : ["./server.d.ts"]
+      "typeRoots" : [
+        "./server.d.ts"
+      ]
   },
   "include": [
-    "./**/*"
+    "./**/*",
+    "./node_modules/@micelord/**/*"
   ]
 }
