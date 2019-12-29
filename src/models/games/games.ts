@@ -44,7 +44,7 @@ export class GamesModel {
     }
   }
 
-  async find(filter: {[key: string]: any}): Promise<GameJsonPayload[]> {
+  async find(filter?: {[key: string]: any}): Promise<GameJsonPayload[]> {
     const result = await this.collection.find(filter) as Cursor<GameSchema & {_id: ObjectID}>;
 
     if (result === null) return null;

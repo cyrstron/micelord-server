@@ -1,5 +1,5 @@
 
-import { GamesModel } from "../models/games";
+import { GamesModel, GameSchema } from "../models/games";
 import { GameJsonPayload } from "../models/games";
 
 export class GamesService {
@@ -7,7 +7,15 @@ export class GamesService {
     private games: GamesModel
   ) {}
 
-  getGameById(id: string): Promise<GameJsonPayload | undefined> {
+  getById(id: string): Promise<GameJsonPayload | undefined> {
     return this.games.findById(id);
+  }
+
+  create(game: GameSchema) {
+    return this.games.add(game);
+  }
+
+  getAll() {
+    return this.games.find();
   }
 }
