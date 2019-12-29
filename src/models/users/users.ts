@@ -40,7 +40,7 @@ export class UsersModel {
     this.collection.createIndex({ name: 1 }, { unique: true });
   }
 
-  add(user: UserSchema) {
+  async add(user: UserSchema) {
     return this.collection.insertOne(user);
   }
 
