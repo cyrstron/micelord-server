@@ -12,11 +12,11 @@ export class GamesController {
 
   getGameById: RequestHandler = async (req: RequestWithUser, res, next) => {
     const {
-      gameId
+      id
     } = req.params;
 
     try {
-      const game = await this.games.getById(gameId);
+      const game = await this.games.getById(id);
 
       if (!game) throw new HttpError('Game not found', 404, 'Not found');
 
