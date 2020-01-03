@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { RequestWithUser } from "./auth-controller";
 import { HttpError } from "../errors/http-error";
 import { GamesService } from "services/games-service";
-import { GameSchema } from "models/games";
+import { Game } from "models/games";
 
 export class GamesController {
   constructor(
@@ -38,7 +38,7 @@ export class GamesController {
 
   createGame: RequestHandler = async (req: RequestWithUser, res, next) => {
     const {_id: userId, name: userName} = req.user;
-    const gamePayload = req.body as Omit<GameSchema, 'createdBy'>;
+    const gamePayload = req.body as Omit<Game, 'createdBy' | '_id'>;
 
     try {
       const game = await this.games.create({

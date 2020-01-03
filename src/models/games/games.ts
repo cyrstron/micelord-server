@@ -8,11 +8,23 @@ export interface GameSchema {
     _id: string;
     name: string;
   };
-  border: grider.GeoPoint[][];
+  border: grider.GeoJSONPolygon;
   gridConfig: grider.GridConfig;
 }
 
 export type GameJsonPayload = GameSchema & {
+  _id: string;
+}
+
+export interface Game {
+  name: string;
+  description?: string;
+  createdBy: {
+    _id: string;
+    name: string;
+  };
+  border: grider.GeoPoint[];
+  gridConfig: grider.GridConfig;
   _id: string;
 }
 
@@ -22,42 +34,49 @@ export class GamesModel {
   constructor(db: Db) {
     this.collection = db.collection<GameSchema>('games');
 
-    this.collection.createIndex({border: '2d'});
+    this.collection.createIndex({border: '2dsphere'});
   }
 
-  async add(game: GameSchema) {
-    await this.validateGame(game);
+  async add({border, ...game}: Omit<Game, '_id'>) {
+    await this.validateGame({...game, border});
 
-    return this.collection.insertOne(game);
+    const dbGame: GameSchema = {
+      ...game,
+      border: this.toDbBorder(border)
+    }
+
+    return this.collection.insertOne(dbGame);
   }
 
-  async findOne(filter: {[key: string]: any}): Promise<GameJsonPayload | null> {
+  async findOne(filter: {[key: string]: any}): Promise<Game | null> {
     const result = await this.collection.findOne(filter) as null | (GameSchema & {_id: ObjectID});
 
     if (result === null) return null;
 
-    const {_id, ...user} = result;
+    const {_id, border, ...game} = result;
 
     return {
       _id: _id.toHexString(),
-      ...user
+      border: this.toClientBorder(border),
+      ...game
     }
   }
 
-  async find(filter?: {[key: string]: any}): Promise<GameJsonPayload[]> {
+  async find(filter?: {[key: string]: any}): Promise<Game[]> {
     const result = await this.collection.find(filter) as Cursor<GameSchema & {_id: ObjectID}>;
 
     if (result === null) return null;
 
-    const games = result.map(({_id, ...game}) => ({
+    const games = result.map(({_id, border, ...game}) => ({
       _id: _id.toHexString(), 
+      border: this.toClientBorder(border),
       ...game
     }));
 
     return games.toArray();
   }
 
-  findById(id: string): Promise<GameJsonPayload | null> {
+  findById(id: string): Promise<Game | null> {
     return this.findOne({_id: new ObjectID(id)});
   }
 
@@ -88,7 +107,7 @@ export class GamesModel {
       throw new Error('Cell size shouldn\'t be less than 5');
     }
 
-    if (cellSize < 10000000) {
+    if (cellSize > 10000000) {
       throw new Error('Cell size shouldn\'t be more than 10000000');
     }
   }
@@ -118,10 +137,18 @@ export class GamesModel {
     name,
     gridConfig,
     border,
-  }: GameSchema) {
+  }: Omit<Game, '_id'>) {
     this.validateName(name);
     this.validateGridConfig(gridConfig);
 
-    await this.validateBorder(border[0], gridConfig);
+    await this.validateBorder(border, gridConfig);
+  }
+
+  toDbBorder(border: grider.GeoPoint[]): grider.GeoJSONPolygon {
+    return GeoPolygon.fromPlain(border).toGeoJSON();
+  }
+
+  toClientBorder(border: grider.GeoJSONPolygon): grider.GeoPoint[] {
+    return GeoPolygon.fromGeoJSON(border).toPlain();
   }
 }

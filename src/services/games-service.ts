@@ -1,17 +1,16 @@
 
-import { GamesModel, GameSchema } from "../models/games";
-import { GameJsonPayload } from "../models/games";
+import { GamesModel, Game } from "../models/games";
 
 export class GamesService {
   constructor(
     private games: GamesModel
   ) {}
 
-  getById(id: string): Promise<GameJsonPayload | undefined> {
+  getById(id: string): Promise<Game | undefined> {
     return this.games.findById(id);
   }
 
-  create(game: GameSchema) {
+  create(game: Omit<Game, '_id'>) {
     return this.games.add(game);
   }
 

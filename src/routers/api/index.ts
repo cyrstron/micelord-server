@@ -17,7 +17,7 @@ export const createApiRouter = (
 
   router.use(middlewares.verifyToken);
   
-  router.use('/users', gamesRouter);
+  router.use('/games', gamesRouter);
 
   return router;
 };
